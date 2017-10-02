@@ -1,13 +1,20 @@
 <component name="ArtifactManager">
   <artifact type="exploded-war" name="RAPP:war exploded">
-    <output-path>$PROJECT_DIR$/out/artifacts/RAPP_war_exploded</output-path>
+    <output-path>$PROJECT_DIR$/target/RAPP-1.0-SNAPSHOT</output-path>
     <root id="root">
-      <element id="javaee-facet-resources" facet="RAPP/web/Web" />
       <element id="directory" name="WEB-INF">
         <element id="directory" name="classes">
           <element id="module-output" name="RAPP" />
         </element>
+        <element id="directory" name="lib">
+          <element id="library" level="project" name="Maven: com.sun.jersey:jersey-bundle:1.18.3" />
+          <element id="library" level="project" name="Maven: javax.ws.rs:jsr311-api:1.1.1" />
+        </element>
       </element>
+      <element id="directory" name="META-INF">
+        <element id="file-copy" path="$PROJECT_DIR$/target/RAPP-1.0-SNAPSHOT/META-INF/MANIFEST.MF" />
+      </element>
+      <element id="javaee-facet-resources" facet="RAPP/web/Web" />
     </root>
   </artifact>
 </component>
