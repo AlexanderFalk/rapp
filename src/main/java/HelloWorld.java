@@ -7,9 +7,9 @@ import javax.ws.rs.core.MediaType;
 public class HelloWorld {
 
     @GET
-    @Produces(MediaType.TEXT_PLAIN)
+    @Produces(MediaType.TEXT_XML)
     public String getMessage() {
-        return "Kan dette ændres nemt?";
+        return "<?xml version=\"1.0\"?>" + "<hello> Hello Jersey" + "</hello>";
     }
 
 }
