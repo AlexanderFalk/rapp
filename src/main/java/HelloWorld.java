@@ -9,6 +9,6 @@ public class HelloWorld {
     @GET
     @Produces(MediaType.TEXT_PLAIN)
     public String getMessage() {
-        return "Hello world!";
+        return "Kan dette ændres nemt?";
     }
 }
