@@ -25,6 +25,7 @@
     </dependencies>
 
     <build>
+        <finalName>rapi</finalName>
         <plugins>
             <plugin>
                 <artifactId>maven-war-plugin</artifactId>
