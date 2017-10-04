@@ -1,0 +1,4 @@
+FROM rabbitmq
+
+EXPOSE 9001:80
+
