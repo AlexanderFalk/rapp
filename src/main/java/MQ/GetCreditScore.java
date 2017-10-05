@@ -29,31 +29,33 @@ public class GetCreditScore {
     public double userLoanAount;
     public String userSsn;
     public Integer csResult;
+    public Loan loan = new Loan();
 
     public static void main(String[] args) throws IOException, TimeoutException {
         Loan loan = new Loan();
 
         GetCreditScore cds = new GetCreditScore();
-        cds.userSsn = "010192-1581";
-        cds.csResult = creditScore(cds.userSsn);
-        cds.writeXML();
+        loan.setSSN("010192-1581");
+        loan.setCreditScore(creditScore(loan.getSSN()));
+//        System.out.println("CS: " + loan.getLoanDuration());
+        cds.writeXML(loan.getCreditScore());
 
-        ConnectionFactory factory = new ConnectionFactory();
-        factory.setHost("localhost");
-        Connection connection = factory.newConnection();
-        Channel channel = connection.createChannel();
-
-        channel.queueDeclare(QUEUE_NAME, false, false, false, null);
-        String message = cds.userSsn;
-        channel.basicPublish("", QUEUE_NAME, null, message.getBytes());
-        System.out.println(" [X] Sent '" + message + "'");
-
-        channel.close();
-        connection.close();
+//        ConnectionFactory factory = new ConnectionFactory();
+//        factory.setHost("localhost");
+//        Connection connection = factory.newConnection();
+//        Channel channel = connection.createChannel();
+//
+//        channel.queueDeclare(QUEUE_NAME, false, false, false, null);
+//        String message = cds.userSsn;
+//        channel.basicPublish("", QUEUE_NAME, null, message.getBytes());
+//        System.out.println(" [X] Sent '" + message + "'");
+//
+//        channel.close();
+//        connection.close();
 
     }
 
-    public void writeXML(){
+    public void writeXML(int SSN){
         try {
             DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
@@ -63,14 +65,15 @@ public class GetCreditScore {
             doc.appendChild(rootElement);
 
             Element ssn = doc.createElement("ssn");
-            ssn.appendChild(doc.createTextNode(csResult.toString()));
+            ssn.appendChild(doc.createTextNode(String.valueOf(SSN)));
             rootElement.appendChild(ssn);
+
 
 
             TransformerFactory transformerFactory = TransformerFactory.newInstance();
             Transformer transformer = transformerFactory.newTransformer();
             DOMSource source = new DOMSource(doc);
-            StreamResult result = new StreamResult(new File("D:\\file.xml"));
+            StreamResult result = new StreamResult(new File("D:\\loan.xml"));
 
             transformer.transform(source, result);
 
