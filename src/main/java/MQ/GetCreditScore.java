@@ -18,44 +18,48 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
+import java.util.Date;
 import java.util.concurrent.TimeoutException;
 
 
 public class GetCreditScore {
     private final static String QUEUE_NAME = "loanqueue";
 
-    public double userLoanAount;
-    public String userSsn;
-    public Integer csResult;
-    public Loan loan = new Loan();
 
     public static void main(String[] args) throws IOException, TimeoutException {
         Loan loan = new Loan();
-
         GetCreditScore cds = new GetCreditScore();
-        loan.setSSN("010192-1581");
-        loan.setCreditScore(creditScore(loan.getSSN()));
-//        System.out.println("CS: " + loan.getLoanDuration());
-        cds.writeXML(loan.getCreditScore());
 
-//        ConnectionFactory factory = new ConnectionFactory();
-//        factory.setHost("localhost");
-//        Connection connection = factory.newConnection();
-//        Channel channel = connection.createChannel();
-//
-//        channel.queueDeclare(QUEUE_NAME, false, false, false, null);
-//        String message = cds.userSsn;
-//        channel.basicPublish("", QUEUE_NAME, null, message.getBytes());
-//        System.out.println(" [X] Sent '" + message + "'");
-//
-//        channel.close();
-//        connection.close();
+        loan.setSSN("010192-1581");
+
+        // Sets the credit score to loan.creditScore
+        loan.setCreditScore(creditScore(loan.getSSN()));
+
+        // Runs the writeXML method
+        cds.writeXML(loan.getSSN(),loan.getCreditScore(), loan.getLoanAmount(), loan.getLoanDuration(), loan.getInterestRate(), loan.getRules());
+
+        // The messaging method, which in the moment sends a test string
+        ConnectionFactory factory = new ConnectionFactory();
+        factory.setHost("localhost");
+        Connection connection = factory.newConnection();
+        Channel channel = connection.createChannel();
+
+        channel.queueDeclare(QUEUE_NAME, false, false, false, null);
+        String message = "test";
+        channel.basicPublish("", QUEUE_NAME, null, message.getBytes());
+        System.out.println(" [X] Sent '" + message + "'");
+
+        channel.close();
+        connection.close();
 
     }
 
-    public void writeXML(int SSN){
+    // The method that makes the XML file
+    public void writeXML(String ssnumber, int creditScore, double loanAmount, Date loanDuration, double interestRate, String[] rules) throws IOException {
         try {
             DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
@@ -65,10 +69,28 @@ public class GetCreditScore {
             doc.appendChild(rootElement);
 
             Element ssn = doc.createElement("ssn");
-            ssn.appendChild(doc.createTextNode(String.valueOf(SSN)));
+            ssn.appendChild(doc.createTextNode(ssnumber));
             rootElement.appendChild(ssn);
 
+            Element credScore = doc.createElement("creditscore");
+            credScore.appendChild(doc.createTextNode(String.valueOf(creditScore)));
+            rootElement.appendChild(credScore);
 
+            Element loanAm = doc.createElement("loanamount");
+            loanAm.appendChild(doc.createTextNode(String.valueOf(loanAmount)));
+            rootElement.appendChild(loanAm);
+
+            Element loanDu = doc.createElement("loanduration");
+            loanDu.appendChild(doc.createTextNode(String.valueOf(loanDuration)));
+            rootElement.appendChild(loanDu);
+
+            Element interestRa = doc.createElement("interestrate");
+            interestRa.appendChild(doc.createTextNode(String.valueOf(interestRate)));
+            rootElement.appendChild(interestRa);
+
+            Element ruls = doc.createElement("rules");
+            ruls.appendChild(doc.createTextNode(String.valueOf(rules)));
+            rootElement.appendChild(ruls);
 
             TransformerFactory transformerFactory = TransformerFactory.newInstance();
             Transformer transformer = transformerFactory.newTransformer();
@@ -79,6 +101,16 @@ public class GetCreditScore {
 
             System.out.println("=== File created ===");
 
+
+              // Not used. But this method takes all from loan.xml, and puts it on a string
+//            BufferedReader br = new BufferedReader(new FileReader(new File("D:\\loan.xml")));
+//            String line;
+//            StringBuilder sb = new StringBuilder();
+//
+//            while ((line=br.readLine())!= null){
+//                sb.append(line.trim());
+//            }
+//            System.out.println(sb);
 
         } catch (ParserConfigurationException pce) {
             pce.printStackTrace();
