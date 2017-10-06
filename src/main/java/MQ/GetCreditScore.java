@@ -26,12 +26,8 @@ import java.util.concurrent.TimeoutException;
 
 
 public class GetCreditScore {
-    private final static String QUEUE_NAME = "loanqueue";
-
-    public static byte[] readAllBytes(Path path) throws IOException {
-        return new byte[0];
-    }
-
+    private final static String QUEUE_NAME = "hello";
+    public byte[] xmlBytes;
 
     public static void main(String[] args) throws IOException, TimeoutException, SAXException {
         Loan loan = new Loan();
@@ -45,24 +41,11 @@ public class GetCreditScore {
         // Runs the writeXML method
         cds.writeXML(loan.getSSN(),loan.getCreditScore(), loan.getLoanAmount(), loan.getLoanDuration(), loan.getInterestRate(), loan.getRules());
 
-        // The messaging method, which in the moment sends a test string
-//        ConnectionFactory factory = new ConnectionFactory();
-//        factory.setHost("localhost");
-//        Connection connection = factory.newConnection();
-//        Channel channel = connection.createChannel();
-//
-//        channel.queueDeclare(QUEUE_NAME, false, false, false, null);
-//        String message = "test";
-//        channel.basicPublish("", QUEUE_NAME, null, message.getBytes());
-//        System.out.println(" [X] Sent '" + message + "'");
-//
-//        channel.close();
-//        connection.close();
 
     }
 
     // The method that makes the XML file
-    public void writeXML(String ssnumber, int creditScore, double loanAmount, Date loanDuration, double interestRate, String[] rules) throws IOException, SAXException {
+    public void writeXML(String ssnumber, int creditScore, double loanAmount, Date loanDuration, double interestRate, String[] rules){
         try {
             DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
@@ -103,30 +86,43 @@ public class GetCreditScore {
 
             transformer.transform(source, result);
 
-            byte[]array = bos.toByteArray();
-            
+            byte[] array = bos.toByteArray();
+            xmlBytes = array;
 
             System.out.println("=== File converted to byte array ===");
 
+            // When all the above is done, then sendMesseage() begin
+            sendMessage();
 
 
-              // Not used. But this method takes all from loan.xml, and puts it on a string
-//            BufferedReader br = new BufferedReader(new FileReader(new File("D:\\loan.xml")));
-//            String line;
-//            StringBuilder sb = new StringBuilder();
-//
-//            while ((line=br.readLine())!= null){
-//                sb.append(line.trim());
-//            }
-//            System.out.println(sb);
-
-        } catch (ParserConfigurationException pce) {
-            pce.printStackTrace();
-        } catch (TransformerConfigurationException tfce) {
-            tfce.printStackTrace();
-        } catch (TransformerException te) {
-            te.printStackTrace();
+        } catch (ParserConfigurationException e) {
+            e.printStackTrace();
+        } catch (TransformerConfigurationException e) {
+            e.printStackTrace();
+        } catch (TransformerException e) {
+            e.printStackTrace();
+        } catch (TimeoutException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
+
+    }
+
+    // The messaging method, which in the moment sends a test string
+    public void sendMessage() throws IOException, TimeoutException {
+
+        ConnectionFactory factory = new ConnectionFactory();
+        factory.setHost("localhost");
+        Connection connection = factory.newConnection();
+        Channel channel = connection.createChannel();
+
+        channel.queueDeclare(QUEUE_NAME, false, false, false, null);
+        channel.basicPublish("", QUEUE_NAME, null, xmlBytes);
+        System.out.println(" [X] Sent '" + xmlBytes + "'");
+
+        channel.close();
+        connection.close();
     }
 
 
