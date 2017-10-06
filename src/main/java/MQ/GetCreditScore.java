@@ -6,8 +6,10 @@ import MQ.Model.Loan;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.Channel;
+import javafx.scene.shape.Path;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.xml.sax.SAXException;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -18,10 +20,7 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.Date;
 import java.util.concurrent.TimeoutException;
 
@@ -29,8 +28,12 @@ import java.util.concurrent.TimeoutException;
 public class GetCreditScore {
     private final static String QUEUE_NAME = "loanqueue";
 
+    public static byte[] readAllBytes(Path path) throws IOException {
+        return new byte[0];
+    }
 
-    public static void main(String[] args) throws IOException, TimeoutException {
+
+    public static void main(String[] args) throws IOException, TimeoutException, SAXException {
         Loan loan = new Loan();
         GetCreditScore cds = new GetCreditScore();
 
@@ -43,23 +46,23 @@ public class GetCreditScore {
         cds.writeXML(loan.getSSN(),loan.getCreditScore(), loan.getLoanAmount(), loan.getLoanDuration(), loan.getInterestRate(), loan.getRules());
 
         // The messaging method, which in the moment sends a test string
-        ConnectionFactory factory = new ConnectionFactory();
-        factory.setHost("localhost");
-        Connection connection = factory.newConnection();
-        Channel channel = connection.createChannel();
-
-        channel.queueDeclare(QUEUE_NAME, false, false, false, null);
-        String message = "test";
-        channel.basicPublish("", QUEUE_NAME, null, message.getBytes());
-        System.out.println(" [X] Sent '" + message + "'");
-
-        channel.close();
-        connection.close();
+//        ConnectionFactory factory = new ConnectionFactory();
+//        factory.setHost("localhost");
+//        Connection connection = factory.newConnection();
+//        Channel channel = connection.createChannel();
+//
+//        channel.queueDeclare(QUEUE_NAME, false, false, false, null);
+//        String message = "test";
+//        channel.basicPublish("", QUEUE_NAME, null, message.getBytes());
+//        System.out.println(" [X] Sent '" + message + "'");
+//
+//        channel.close();
+//        connection.close();
 
     }
 
     // The method that makes the XML file
-    public void writeXML(String ssnumber, int creditScore, double loanAmount, Date loanDuration, double interestRate, String[] rules) throws IOException {
+    public void writeXML(String ssnumber, int creditScore, double loanAmount, Date loanDuration, double interestRate, String[] rules) throws IOException, SAXException {
         try {
             DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
@@ -95,11 +98,16 @@ public class GetCreditScore {
             TransformerFactory transformerFactory = TransformerFactory.newInstance();
             Transformer transformer = transformerFactory.newTransformer();
             DOMSource source = new DOMSource(doc);
-            StreamResult result = new StreamResult(new File("D:\\loan.xml"));
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            StreamResult result = new StreamResult(bos);
 
             transformer.transform(source, result);
 
-            System.out.println("=== File created ===");
+            byte[]array = bos.toByteArray();
+            
+
+            System.out.println("=== File converted to byte array ===");
+
 
 
               // Not used. But this method takes all from loan.xml, and puts it on a string
