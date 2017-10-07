@@ -6,7 +6,6 @@ import MQ.Model.Loan;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.Channel;
-import javafx.scene.shape.Path;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
@@ -36,7 +35,7 @@ public class GetCreditScore {
         loan.setSSN("010192-1581");
 
         // Sets the credit score to loan.creditScore
-        loan.setCreditScore(creditScore(loan.getSSN()));
+        //loan.setCreditScore(creditScore(loan.getSSN()));
 
         // Runs the writeXML method
         cds.writeXML(loan.getSSN(),loan.getCreditScore(), loan.getLoanAmount(), loan.getLoanDuration(), loan.getInterestRate(), loan.getRules());
