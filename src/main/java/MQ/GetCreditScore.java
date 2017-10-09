@@ -38,13 +38,13 @@ public class GetCreditScore {
         //loan.setCreditScore(creditScore(loan.getSSN()));
 
         // Runs the writeXML method
-        cds.writeXML(loan.getSSN(),loan.getCreditScore(), loan.getLoanAmount(), loan.getLoanDuration(), loan.getInterestRate(), loan.getRules());
+        cds.writeXML(loan.getSSN(), loan.getCreditScore(), loan.getLoanAmount(), loan.getLoanDuration(), loan.getInterestRate(), loan.getRules());
 
 
     }
 
     // The method that makes the XML file
-    public void writeXML(String ssnumber, int creditScore, double loanAmount, Date loanDuration, double interestRate, String[] rules){
+    public void writeXML(String ssnumber, int creditScore, double loanAmount, Date loanDuration, double interestRate, String[] rules) {
         try {
             DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
@@ -125,8 +125,7 @@ public class GetCreditScore {
     }
 
 
-    private static int creditScore(java.lang.String ssn)
-    {
+    private static int creditScore(java.lang.String ssn) {
         CreditScoreService_Service service = new CreditScoreService_Service();
         CreditScoreService port = service.getCreditScoreServicePort();
         return port.creditScore(ssn);
