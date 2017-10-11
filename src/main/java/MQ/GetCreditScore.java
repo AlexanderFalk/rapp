@@ -21,21 +21,35 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.io.*;
 import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.Scanner;
 import java.util.concurrent.TimeoutException;
 
 
 public class GetCreditScore {
-    private final static String QUEUE_NAME = "hello";
+    private final static String QUEUE_NAME = "loan";
     public byte[] xmlBytes;
 
     public static void main(String[] args) throws IOException, TimeoutException, SAXException {
         Loan loan = new Loan();
         GetCreditScore cds = new GetCreditScore();
 
-        loan.setSSN("010192-1581");
+        Scanner reader = new Scanner(System.in);
+        System.out.println("Enter your social security number in the format ******-****:");
+        loan.setSSN(reader.next());
 
         // Sets the credit score to loan.creditScore
-        //loan.setCreditScore(creditScore(loan.getSSN()));
+        loan.setCreditScore(creditScore(loan.getSSN()));
+
+        System.out.println("Enter how much you want to loan:");
+        loan.setLoanAmount(reader.nextDouble());
+
+        System.out.println("Enter the loan's duration in days:");
+        loan.setLoanDuration(reader.next());
+//
+
+
+        reader.close();
 
         // Runs the writeXML method
         cds.writeXML(loan.getSSN(), loan.getCreditScore(), loan.getLoanAmount(), loan.getLoanDuration(), loan.getInterestRate(), loan.getRules());
@@ -44,7 +58,7 @@ public class GetCreditScore {
     }
 
     // The method that makes the XML file
-    public void writeXML(String ssnumber, int creditScore, double loanAmount, Date loanDuration, double interestRate, String[] rules) {
+    public void writeXML(String ssnumber, int creditScore, double loanAmount, String loanDuration, double interestRate, String[] rules) {
         try {
             DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
@@ -66,7 +80,7 @@ public class GetCreditScore {
             rootElement.appendChild(loanAm);
 
             Element loanDu = doc.createElement("loanduration");
-            loanDu.appendChild(doc.createTextNode(String.valueOf(loanDuration)));
+            loanDu.appendChild(doc.createTextNode(loanDuration));
             rootElement.appendChild(loanDu);
 
             Element interestRa = doc.createElement("interestrate");
@@ -112,7 +126,7 @@ public class GetCreditScore {
     public void sendMessage() throws IOException, TimeoutException {
 
         ConnectionFactory factory = new ConnectionFactory();
-        factory.setHost("localhost");
+        factory.setHost("207.154.228.245");
         Connection connection = factory.newConnection();
         Channel channel = connection.createChannel();
 
