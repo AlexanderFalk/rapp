@@ -20,6 +20,9 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.io.*;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Scanner;
@@ -30,7 +33,7 @@ public class GetCreditScore {
     private final static String QUEUE_NAME = "loan";
     public byte[] xmlBytes;
 
-    public static void main(String[] args) throws IOException, TimeoutException, SAXException {
+    public static void main(String[] args) throws IOException, TimeoutException, SAXException, ParseException {
         Loan loan = new Loan();
         GetCreditScore cds = new GetCreditScore();
 
@@ -45,14 +48,22 @@ public class GetCreditScore {
         loan.setLoanAmount(reader.nextDouble());
 
         System.out.println("Enter the loan's duration in days:");
-        loan.setLoanDuration(reader.next());
-//
-
+        loan.setLoanDuration(reader.nextInt());
 
         reader.close();
 
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        Date date = dateFormat.parse("1970-01-01");
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        calendar.add(Calendar.DATE, loan.getLoanDuration());
+        String output = dateFormat.format(calendar.getTime());
+
+        String finalLoanDuration = output + " 01:00:00.0 CET";
+        System.out.println(finalLoanDuration);
+
         // Runs the writeXML method
-        cds.writeXML(loan.getSSN(), loan.getCreditScore(), loan.getLoanAmount(), loan.getLoanDuration(), loan.getInterestRate(), loan.getRules());
+        cds.writeXML(loan.getSSN(), loan.getCreditScore(), loan.getLoanAmount(), finalLoanDuration, loan.getInterestRate(), loan.getRules());
 
 
     }
