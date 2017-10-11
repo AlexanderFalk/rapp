@@ -60,7 +60,6 @@ public class GetCreditScore {
         String output = dateFormat.format(calendar.getTime());
 
         String finalLoanDuration = output + " 01:00:00.0 CET";
-        System.out.println(finalLoanDuration);
 
         // Runs the writeXML method
         cds.writeXML(loan.getSSN(), loan.getCreditScore(), loan.getLoanAmount(), finalLoanDuration, loan.getInterestRate(), loan.getRules());
