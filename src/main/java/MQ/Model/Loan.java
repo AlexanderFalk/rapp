@@ -6,7 +6,7 @@ public class Loan {
     private String SSN;
     private int creditScore;
     private double loanAmount;
-    private Date loanDuration;
+    private String loanDuration;
     private double interestRate;
     private String[] rules;
 
@@ -34,11 +34,11 @@ public class Loan {
         this.loanAmount = loanAmount;
     }
 
-    public Date getLoanDuration() {
+    public String getLoanDuration() {
         return loanDuration;
     }
 
-    public void setLoanDuration(Date loanDuration) {
+    public void setLoanDuration(String loanDuration) {
         this.loanDuration = loanDuration;
     }
 
